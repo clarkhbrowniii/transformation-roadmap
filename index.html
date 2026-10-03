@@ -273,14 +273,49 @@
         font-weight: 700;
         line-height: 1.3;
       }
+      .kpi-metric {
+        width: 100%;
+      }
+      .kpi-metric-labels {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 4px 12px;
+        margin-bottom: 8px;
+      }
+      .kpi-value {
+        color: var(--navy-2);
+        font-weight: 800;
+      }
       .kpi-chart {
-        width: 58px;
-        height: 58px;
-        flex-shrink: 0;
+        position: relative;
+        display: flex;
+        width: 100%;
+        height: 12px;
+        background: #e0e9ef;
+        border-radius: 3px;
+      }
+      .kpi-bar-value {
+        width: var(--value);
+        background: var(--blue);
+        border-radius: 3px 0 0 3px;
+      }
+      .kpi-bar-remainder {
+        flex: 1;
+      }
+      .kpi-target-marker {
+        position: absolute;
+        left: var(--target);
+        top: -3px;
+        width: 2px;
+        height: 18px;
+        background: var(--navy);
+        transform: translateX(-50%);
       }
       .kpi-target {
         display: block;
-        margin-top: 5px;
+        margin-top: 0;
         color: var(--muted);
         font-size: 1rem;
         line-height: 1.3;
@@ -1563,7 +1598,6 @@
       aria-atomic="true"
     ></div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
     <script>
       const qbrData = {
         metadata: {
@@ -1877,7 +1911,6 @@
       const liveRegion = document.getElementById("live-region");
       let activeOverlay = null;
       let returnFocusTo = null;
-      let charts = [];
 
       function escapeHtml(value) {
         return String(value).replace(
@@ -1907,8 +1940,13 @@
                 (kpi) => `
           <article class="kpi-card" data-kind="${escapeHtml(kpi.kind)}">
             <h3 class="kpi-name">${escapeHtml(kpi.name)}</h3>
-            <div class="kpi-chart" role="img" aria-label="${escapeHtml(kpi.name)}: ${kpi.value}%"><canvas id="chart-${escapeHtml(kpi.id)}" aria-hidden="true"></canvas></div>
-            <span class="kpi-target">Target: <strong>${escapeHtml(kpi.target)}</strong></span>
+            <div class="kpi-metric">
+              <div class="kpi-metric-labels"><strong class="kpi-value">${kpi.value}%</strong><span class="kpi-target">Target: <strong>${escapeHtml(kpi.target)}</strong></span></div>
+              <div class="kpi-chart" role="img" aria-label="${escapeHtml(kpi.name)}: current ${kpi.value}%, target ${escapeHtml(kpi.target)}. Scale 0 to 100%." style="--value: ${kpi.value}%;">
+                <span class="kpi-bar-value" aria-hidden="true"></span><span class="kpi-bar-remainder" aria-hidden="true"></span>
+                ${/^\d+(?:\.\d+)?%$/.test(kpi.target) ? `<span class="kpi-target-marker" style="--target: ${parseFloat(kpi.target)}%;" aria-hidden="true"></span>` : ""}
+              </div>
+            </div>
             <div class="kpi-bottom">
               <p class="kpi-definition">${escapeHtml(kpi.definition)}</p>
               <div class="kpi-foot"><span class="kpi-signal">${escapeHtml(kpi.signal)}</span></div>
@@ -1991,69 +2029,6 @@
         </article>`,
           )
           .join("");
-      }
-
-      function initializeCharts() {
-        if (!window.Chart) {
-          document.querySelectorAll(".kpi-chart").forEach((chart) => {
-            chart.setAttribute(
-              "aria-label",
-              `Chart library unavailable. ${chart.getAttribute("aria-label")}`,
-            );
-          });
-          return;
-        }
-        const centerValue = {
-          id: "centerValue",
-          afterDraw(chart, args, options) {
-            const { ctx, chartArea } = chart;
-            if (!chartArea) return;
-            const x = (chartArea.left + chartArea.right) / 2;
-            const y = (chartArea.top + chartArea.bottom) / 2;
-            ctx.save();
-            ctx.fillStyle = "#123f67";
-            const chartFontSize = parseFloat(
-              getComputedStyle(document.documentElement).fontSize,
-            );
-            ctx.font = `700 ${chartFontSize}px DM Sans, sans-serif`;
-            ctx.textAlign = "center";
-            ctx.textBaseline = "middle";
-            ctx.fillText(`${options.value}%`, x, y);
-            ctx.restore();
-          },
-        };
-        charts = qbrData.kpis.map(
-          (kpi) =>
-            new Chart(document.getElementById(`chart-${kpi.id}`), {
-              type: "doughnut",
-              data: {
-                labels: ["Actual metric value", "Remaining to 100%"],
-                datasets: [
-                  {
-                    data: [kpi.value, 100 - kpi.value],
-                    backgroundColor: ["#0879ae", "#e0e9ef"],
-                    borderWidth: 0,
-                    hoverOffset: 0,
-                  },
-                ],
-              },
-              options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                cutout: "75%",
-                rotation: -90,
-                circumference: 360,
-                animation: false,
-                events: [],
-                plugins: {
-                  legend: { display: false },
-                  tooltip: { enabled: false },
-                  centerValue: { value: kpi.value },
-                },
-              },
-              plugins: [centerValue],
-            }),
-        );
       }
 
       function renderDetail(initiative) {
@@ -2240,7 +2215,6 @@
       kpiResizeObserver.observe(document.getElementById("kpi-groups"));
       renderRoadmap();
       renderDecisionList();
-      initializeCharts();
     </script>
   </body>
 </html>
