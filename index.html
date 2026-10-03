@@ -186,6 +186,16 @@
         background: var(--green);
         border-radius: 50%;
         box-shadow: 0 0 0 4px var(--green-bg);
+        animation: health-pulse 2.4s ease-out infinite;
+      }
+      @keyframes health-pulse {
+        0%,
+        100% {
+          box-shadow: 0 0 0 4px var(--green-bg);
+        }
+        60% {
+          box-shadow: 0 0 0 10px rgba(22, 133, 82, 0);
+        }
       }
       .health-heading {
         flex-wrap: wrap;
@@ -1318,6 +1328,9 @@
         }
       }
       @media (prefers-reduced-motion: reduce) {
+        .health-dot {
+          animation: none;
+        }
         *,
         *::before,
         *::after {
