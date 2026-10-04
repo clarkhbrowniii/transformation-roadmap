@@ -1,0 +1,185 @@
+/* Shared Group 12 design system. Bootstrap supplies components and layout. */
+:root {
+  --site-navy: #092d4c; --site-blue: #0879ae; --site-cyan: #62c9ff;
+  --site-teal: #007d70; --site-bg: #edf3f7; --site-surface: #fff;
+  --site-text: #15324b; --site-muted: #526b80; --site-border: #d7e2eb;
+  --bs-body-font-family: "DM Sans", "Segoe UI", sans-serif;
+  --bs-body-color: var(--site-text); --bs-body-bg: var(--site-bg);
+  --bs-link-color: var(--site-blue); --bs-border-color: var(--site-border);
+}
+body { min-height: 100vh; display: flex; flex-direction: column; }
+main { flex: 1; }
+a { text-underline-offset: 3px; }
+a:focus-visible, button:focus-visible, [tabindex]:focus-visible { outline: 3px solid #e6a724; outline-offset: 4px; }
+h1, h2, h3 { color: var(--site-navy); line-height: 1.2; font-weight: 700; margin-bottom: 12px; }
+h1 { font-size: clamp(2rem, 3.2vw, 3rem); letter-spacing: -.035em; margin-bottom: 5px; }
+h2 { font-size: 1.65rem; } h3 { font-size: 1.1rem; }
+p { margin: 0 0 12px; overflow-wrap: break-word; }
+.site-container { width: calc(100% - 64px); max-width: 1400px; padding-left: 0; padding-right: 0; }
+.skip { position: absolute; top: -80px; left: 16px; background: white; padding: 12px; z-index: 1100; }
+.skip:focus { top: 12px; }
+.site-header { background: var(--site-navy); border-bottom: 3px solid var(--site-blue); }
+.navbar { padding: 0; min-height: 70px; }
+.navbar-brand { font-size: 1.65rem; font-weight: 750; color: white; }
+.navbar-nav { gap: 5px; }
+.navbar .nav-link { color: white; padding: 20px 13px; font-weight: 600; border-bottom: 4px solid transparent; }
+.navbar .nav-link:hover { color: var(--site-cyan); }
+.navbar .nav-link.active { color: var(--site-cyan); border-bottom-color: var(--site-cyan); }
+.content { padding-top: 30px; padding-bottom: 36px; min-height: 390px; }
+.card { background: var(--site-surface); border: 1px solid var(--site-border); border-radius: 7px; box-shadow: 0 3px 12px #092d4c04; padding: 22px; }
+.info-card { flex-direction: row; }
+.info-grid { margin-top: 4px; margin-bottom: 28px; }
+.team-grid { margin-top: 2px; }
+.btn-primary { --bs-btn-bg: var(--site-blue); --bs-btn-border-color: var(--site-blue); --bs-btn-hover-bg: var(--site-navy); --bs-btn-hover-border-color: var(--site-navy); }
+.table { --bs-table-color: var(--site-text); --bs-table-border-color: var(--site-border); }
+.table th { color: var(--site-navy); background: var(--site-bg); }
+.site-footer { border-top: 1px solid var(--site-border); background: #e8eff5; padding: 20px 0; color: var(--site-muted); font-size: .85rem; }
+.site-footer strong { color: var(--site-navy); font-size: 1rem; }
+.site-footer p { margin: 3px 0 0; }
+.hero {
+        background-color: #e5f3fc;
+        background-image:
+          linear-gradient(
+            90deg,
+            rgba(234, 246, 253, 0.98) 0%,
+            rgba(234, 246, 253, 0.92) 37%,
+            rgba(234, 246, 253, 0.35) 61%,
+            transparent 76%
+          ),
+          url("../images/landing-bg.png");
+        background-position:
+          center,
+          right center;
+        background-size: cover;
+        background-repeat: no-repeat;
+      }
+
+.hero-inner {
+        padding: 38px 0 40px;
+      }
+
+.hero-copy {
+        max-width: 760px;
+      }
+
+.eyebrow {
+        font-size: 0.85rem;
+        letter-spacing: 0.15em;
+        font-weight: 750;
+        color: #086b9e;
+        text-transform: uppercase;
+        margin-bottom: 12px;
+      }
+
+.subtitle {
+        font-size: clamp(1.3rem, 2vw, 1.9rem);
+        font-weight: 650;
+        color: var(--site-navy);
+        line-height: 1.25;
+      }
+
+.intro {
+        font-size: 1.15rem;
+        max-width: 650px;
+        margin: 16px 0 24px;
+      }
+
+.icon {
+        width: 26px;
+        height: 26px;
+        flex-shrink: 0;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1.8;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+.about {
+        max-width: 1180px;
+      }
+
+.info-card {
+        display: flex;
+        align-items: flex-start;
+        gap: 17px;
+      }
+
+.info-card > .icon {
+        color: #0a6093;
+        width: 34px;
+        height: 34px;
+      }
+
+.card p {
+        color: var(--site-muted);
+        margin-bottom: 0;
+      }
+
+.team-top {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+        margin-bottom: 13px;
+      }
+
+.avatar {
+        display: grid;
+        place-items: center;
+        background: #e0f1fb;
+        color: #12557e;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+
+.team-top h3 {
+        margin-bottom: 6px;
+      }
+
+.role {
+        font-size: 0.8rem;
+        font-weight: 750;
+        color: #086b9e;
+        text-transform: uppercase;
+        letter-spacing: 0.055em;
+      }
+
+.pending {
+        font-size: 0.85rem;
+        display: block;
+        margin-bottom: 8px;
+        color: #6a5731;
+      }
+
+.footer-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+      }
+
+.footer-meta {
+        border-left: 1px solid #91a8bb;
+        padding-left: 24px;
+        white-space: nowrap;
+      }
+
+@media (min-width: 1600px) { .hero-inner { padding: 50px 0; } .hero { background-position: center, right 42%; } }
+@media (max-width: 1050px) {
+  .hero-copy { max-width: 660px; }
+  .hero { background-image: linear-gradient(90deg, rgba(234,246,253,.98), rgba(234,246,253,.88) 55%, rgba(234,246,253,.4)), url("../images/landing-bg.png"); }
+  .info-card { display: block; } .info-card > .icon { margin-bottom: 12px; }
+}
+@media (max-width: 991.98px) { .navbar { padding: 12px 0; } .navbar .nav-link { padding: 12px 8px; } .navbar-collapse { padding-top: 12px; } }
+@media (max-width: 640px) {
+  .site-container { width: calc(100% - 32px); }
+  .navbar-brand { font-size: 1.4rem; }
+  .hero-inner { padding: 28px 0; }
+  .hero { background-image: linear-gradient(90deg, rgba(234,246,253,.97), rgba(234,246,253,.91)), url("../images/landing-bg.png"); background-position: right center; }
+  .eyebrow { font-size: .75rem; } .intro { font-size: 1rem; }
+  .info-card { display: flex; } .card { padding: 18px; }
+  .footer-inner { display: block; } .footer-meta { border: 0; padding: 0; margin-top: 14px; white-space: normal; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; } }
