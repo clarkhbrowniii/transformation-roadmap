@@ -33,6 +33,7 @@ p { margin: 0 0 12px; overflow-wrap: break-word; }
 .btn-primary { --bs-btn-bg: var(--site-blue); --bs-btn-border-color: var(--site-blue); --bs-btn-hover-bg: var(--site-navy); --bs-btn-hover-border-color: var(--site-navy); }
 .table { --bs-table-color: var(--site-text); --bs-table-border-color: var(--site-border); }
 .table th { color: var(--site-navy); background: var(--site-bg); }
+.raci-table-wrap { overflow-x: auto; overflow-y: hidden; }
 .site-footer { border-top: 1px solid var(--site-border); background: #e8eff5; padding: 20px 0; color: var(--site-muted); font-size: .85rem; }
 .site-footer strong { color: var(--site-navy); font-size: 1rem; }
 .site-footer p { margin: 3px 0 0; }
