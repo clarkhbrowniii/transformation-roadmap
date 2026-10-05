@@ -34,6 +34,11 @@ p { margin: 0 0 12px; overflow-wrap: break-word; }
 .table { --bs-table-color: var(--site-text); --bs-table-border-color: var(--site-border); }
 .table th { color: var(--site-navy); background: var(--site-bg); }
 .raci-table-wrap { overflow-x: auto; overflow-y: hidden; }
+.repository-summary { min-width: 0; }
+.repository-table-wrap { overflow-x: auto; overflow-y: hidden; }
+.repository-table-wrap table { min-width: 700px; }
+.repository-table-wrap td { overflow-wrap: anywhere; }
+.repository-table-wrap td:nth-child(2) { white-space: pre-wrap; min-width: 260px; }
 .site-footer { border-top: 1px solid var(--site-border); background: #e8eff5; padding: 20px 0; color: var(--site-muted); font-size: .85rem; }
 .site-footer strong { color: var(--site-navy); font-size: 1rem; }
 .site-footer p { margin: 3px 0 0; }

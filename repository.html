@@ -29,7 +29,144 @@
     </header>
     <main class="container site-container content" id="content" tabindex="-1">
       <!-- SITE EDITOR CONTENT START: REPOSITORY -->
-
+      <section class="mb-4" aria-labelledby="repository-heading">
+        <p class="eyebrow">Team Collaboration</p>
+        <h1 id="repository-heading">Repository</h1>
+        <p class="about">Version control was used to document team contributions and the evolution of the project. Commit history and merged pull requests are included as part of the project assessment.</p>
+      </section>
+      <section class="card mb-4" aria-labelledby="repository-name">
+        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+          <div class="repository-summary">
+            <h2 id="repository-name" class="h4">transformation-roadmap</h2>
+            <p>Group 12's Jabil digital transformation roadmap, governance framework, and executive QBR dashboard.</p>
+          </div>
+          <a id="repository-link" class="btn btn-primary flex-shrink-0 align-self-start align-self-md-center" href="https://github.com/clarkhbrowniii/transformation-roadmap" target="_blank" rel="noopener">Open Repository &#8599;</a>
+        </div>
+      </section>
+      <section class="mb-4" aria-labelledby="commits-heading">
+        <h2 id="commits-heading">Recent Commit History</h2>
+        <p id="commits-status" class="text-body-secondary" role="status">Loading repository activity...</p>
+        <noscript><p>Enable JavaScript to load repository activity, or follow the GitHub links below.</p></noscript>
+        <div class="table-responsive repository-table-wrap" role="region" tabindex="0" aria-label="Recent commit history, scrollable horizontally">
+          <table class="table table-bordered align-top mb-0">
+            <caption class="visually-hidden">Five most recent repository commits</caption>
+            <thead><tr><th scope="col">Commit</th><th scope="col">Message</th><th scope="col">Author</th><th scope="col">Date</th></tr></thead>
+            <tbody id="commits-body"></tbody>
+          </table>
+        </div>
+        <p class="mt-3"><a href="https://github.com/clarkhbrowniii/transformation-roadmap/commits" target="_blank" rel="noopener">View all commits on GitHub &#8599;</a></p>
+      </section>
+      <section class="mt-5" aria-labelledby="pulls-heading">
+        <h2 id="pulls-heading">Merged Pull Requests</h2>
+        <p id="pulls-status" class="text-body-secondary" role="status">Loading repository activity...</p>
+        <div class="table-responsive repository-table-wrap" role="region" tabindex="0" aria-label="Merged pull requests, scrollable horizontally">
+          <table class="table table-bordered align-top mb-0">
+            <caption class="visually-hidden">Most recent merged pull requests</caption>
+            <thead><tr><th scope="col">#</th><th scope="col">Title</th><th scope="col">Author</th><th scope="col">Merged</th><th scope="col">Status</th></tr></thead>
+            <tbody id="pulls-body"></tbody>
+          </table>
+        </div>
+        <p class="mt-3"><a href="https://github.com/clarkhbrowniii/transformation-roadmap/pulls" target="_blank" rel="noopener">View all pull requests on GitHub &#8599;</a></p>
+      </section>
+      <script>
+        (() => {
+          // Repository identity comes from the inspected git origin remote.
+          const repositoryUrl = document.getElementById('repository-link').href;
+          const repositoryPath = new URL(repositoryUrl).pathname;
+          const apiUrl = `https://api.github.com/repos${repositoryPath}`;
+          const dateFormat = new Intl.DateTimeFormat('en-US', {
+            month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC'
+          });
+          function dateElement(value) {
+            const date = new Date(value);
+            if (typeof value !== 'string' || Number.isNaN(date.getTime())) {
+              throw new Error('Unexpected date');
+            }
+            const time = document.createElement('time');
+            time.dateTime = value;
+            time.textContent = dateFormat.format(date);
+            return time;
+          }
+          function link(text, path, label) {
+            const anchor = document.createElement('a');
+            anchor.href = `${repositoryUrl}/${path}`;
+            anchor.target = '_blank';
+            anchor.rel = 'noopener';
+            anchor.textContent = text;
+            if (label) anchor.setAttribute('aria-label', label);
+            return anchor;
+          }
+          function row(values) {
+            const tr = document.createElement('tr');
+            values.forEach(value => {
+              const td = document.createElement('td');
+              if (value instanceof Node) td.append(value);
+              else td.textContent = value;
+              tr.append(td);
+            });
+            return tr;
+          }
+          async function loadActivity(kind, endpoint, render) {
+            const status = document.getElementById(`${kind}-status`);
+            const body = document.getElementById(`${kind}-body`);
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 15000);
+            try {
+              const response = await fetch(`${apiUrl}/${endpoint}`, {
+                headers: { Accept: 'application/vnd.github+json' },
+                credentials: 'omit', signal: controller.signal
+              });
+              if (!response.ok) throw new Error('GitHub request failed');
+              const data = await response.json();
+              if (!Array.isArray(data)) throw new Error('Unexpected response');
+              const rows = render(data);
+              body.replaceChildren(...rows);
+              status.textContent = rows.length ? '' :
+                (kind === 'commits' ? 'No commits found.' : 'No merged pull requests found.');
+              status.hidden = rows.length > 0;
+            } catch {
+              status.textContent = 'Repository activity could not be loaded.';
+            } finally {
+              clearTimeout(timeout);
+            }
+          }
+          loadActivity('commits', 'commits?per_page=5', data =>
+            data.slice(0, 5).map(item => {
+              if (!/^[a-f0-9]{40}$/i.test(item?.sha) ||
+                  typeof item.commit?.message !== 'string' ||
+                  typeof item.commit?.author?.name !== 'string') {
+                throw new Error('Unexpected commit');
+              }
+              return row([
+                link(item.sha.slice(0, 7), `commit/${item.sha}`, `View commit ${item.sha.slice(0, 7)} on GitHub`),
+                item.commit.message, item.commit.author.name,
+                dateElement(item.commit.author.date)
+              ]);
+            })
+          );
+          loadActivity('pulls', 'pulls?state=closed&sort=updated&direction=desc&per_page=100', data => {
+            if (data.some(item => !item || !Object.hasOwn(item, 'merged_at'))) {
+              throw new Error('Unexpected pull request response');
+            }
+            return data.filter(pr => pr.merged_at !== null)
+              .sort((a, b) => new Date(b.merged_at) - new Date(a.merged_at))
+              .slice(0, 5).map(pr => {
+                if (!Number.isSafeInteger(pr.number) || pr.number < 1 ||
+                    typeof pr.title !== 'string' || typeof pr.user?.login !== 'string') {
+                  throw new Error('Unexpected pull request');
+                }
+                const badge = document.createElement('span');
+                badge.className = 'badge text-bg-success';
+                badge.textContent = 'Merged';
+                return row([
+                  link(`#${pr.number}`, `pull/${pr.number}`, `View pull request ${pr.number} on GitHub`),
+                  link(pr.title, `pull/${pr.number}`), pr.user.login,
+                  dateElement(pr.merged_at), badge
+                ]);
+              });
+          });
+        })();
+      </script>
       <!-- SITE EDITOR CONTENT END -->
     </main>
     <footer class="site-footer">
